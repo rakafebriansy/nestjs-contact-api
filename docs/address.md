@@ -127,7 +127,6 @@ Response Body (Failed):
 }
 ```
 
-
 ## List Addresses
 
 Endpoint: GET /api/contacts/:contactId/addresses
