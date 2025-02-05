@@ -109,7 +109,7 @@ Response Body (Success):
 Response: Body (Failed):
 ```json
 {
-    "errors": "Name field must be at least 6 characters."
+    "errors": "The name field is required."
 }
 ```
 
