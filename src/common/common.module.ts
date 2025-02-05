@@ -5,6 +5,8 @@ import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { PrismaService } from './prisma/prisma.service';
 import { ValidationService } from './validation/validation.service';
 import * as winston from 'winston';
+import { APP_FILTER } from '@nestjs/core';
+import { ErrorFilter } from './error/error.filter';
 
 @Global()
 @Module({
@@ -35,7 +37,10 @@ import * as winston from 'winston';
                 }),
             ]
         })],
-    providers: [PrismaService, ValidationService],
+    providers: [PrismaService, ValidationService, {
+        provide: APP_FILTER,
+        useClass: ErrorFilter
+    }],
     exports: [PrismaService, ValidationService],
 })
 

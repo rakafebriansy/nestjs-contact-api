@@ -1,8 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { PrismaClientOptions } from '@prisma/client/runtime/library';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { level, Logger } from 'winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, string> implements OnModuleInit {
@@ -28,7 +27,7 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, stri
                     level: 'query'
                 },
             ]
-        })
+        });
     }
 
     onModuleInit() {
