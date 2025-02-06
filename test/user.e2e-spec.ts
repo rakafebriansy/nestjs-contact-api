@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { TestModule } from './test.module';
 import { TestService } from './test.service';
 
+// npm run test:e2e -- test/user.e2e-spec.ts
 describe('UserController (e2e)', () => {
     let app: INestApplication<App>;
     let testService: TestService;

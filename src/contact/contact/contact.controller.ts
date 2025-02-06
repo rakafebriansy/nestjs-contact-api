@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { create } from 'domain';
 import { Auth } from '../../common/auth/auth.decorator';
@@ -50,6 +50,19 @@ export class ContactController {
 
         return {
             data: result
+        };
+    }
+
+    @Delete('/:contactId')
+    @HttpCode(200)
+    async remove(
+        @Auth() user: User, 
+        @Param('contactId', ParseIntPipe) contactId: number
+    ): Promise<WebResponse<boolean>> {
+        await this.contactService.remove(user, contactId);
+        
+        return {
+            data: true
         };
     }
 }

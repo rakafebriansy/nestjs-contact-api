@@ -25,13 +25,19 @@ export class ContactService {
         }
     }
 
-    async checkContactMustExists(username: string, contactId: number): Promise<Contact | null> {
-        return await this.prismaService.contact.findFirst({
+    async checkContactMustExists(username: string, contactId: number): Promise<Contact> {
+        const contact = await this.prismaService.contact.findFirst({
             where: {
                 username: username,
                 id: contactId
             },
         });
+
+        if (!contact) {
+            throw new HttpException('Contact is not found', 404);
+        }
+        
+        return contact;
     }
 
     async create(user: User, request: CreateContactRequest): Promise<ContactResponse> {
@@ -52,11 +58,7 @@ export class ContactService {
     }
 
     async get(user: User, contactId: number): Promise<ContactResponse> {
-        const contact = await this.checkContactMustExists(user.username,contactId);
-
-        if(!contact) {
-            throw new HttpException('Contact is not found', 404);
-        }
+        const contact = await this.checkContactMustExists(user.username, contactId);
 
         return this.toContactResponse(contact);
     }
@@ -70,17 +72,26 @@ export class ContactService {
 
         let contact = await this.checkContactMustExists(user.username, validateRequest.id);
 
-        if(!contact) {
-            throw new HttpException('Contact is not found', 404);
-        }
-
         contact = await this.prismaService.contact.update({
             where: {
                 id: contact.id,
                 username: contact.username
             },
             data: validateRequest
-        }); 
+        });
+
+        return this.toContactResponse(contact);
+    }
+
+    async remove(user: User, contactId: number): Promise<ContactResponse> {
+        await this.checkContactMustExists(user.username, contactId);
+
+        const contact = await this.prismaService.contact.delete({
+            where: {
+                id: contactId,
+                username: user.username
+            }
+        });
 
         return this.toContactResponse(contact);
     }

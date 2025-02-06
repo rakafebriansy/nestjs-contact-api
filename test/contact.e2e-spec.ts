@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { TestModule } from './test.module';
 import { TestService } from './test.service';
 
+// npm run test:e2e -- test/contact.e2e-spec.ts
 describe('UserController (e2e)', () => {
     let app: INestApplication<App>;
     let testService: TestService;
@@ -77,7 +78,6 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if contact is not found', async () => {
             const contact = await testService.getContact();
-            
             const response = await request(app.getHttpServer())
             .get(`/api/contacts/${contact!.id + 1}`)
             .set('Authorization','test');
@@ -112,7 +112,6 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if request is invalid', async () => {
             const contact = await testService.getContact();
-            
             const response = await request(app.getHttpServer())
             .put(`/api/contacts/${contact!.id}`)
             .set('Authorization','test')
@@ -163,6 +162,37 @@ describe('UserController (e2e)', () => {
             expect(response.body.data.last_name).toBe('test updated');
             expect(response.body.data.email).toBe('testupdated@example.com');
             expect(response.body.data.phone).toBe('8888');
+        });
+    });
+
+    describe('DELETE /api/contacts/:contactId', () => {
+        beforeEach(async () => {
+            await testService.deleteContact();
+            await testService.deleteUser();
+            await testService.createUser();
+            await testService.createContact();
+        });
+
+        it('should be rejected if contact is not found', async () => {
+            const contact = await testService.getContact();
+            
+            const response = await request(app.getHttpServer())
+            .delete(`/api/contacts/${contact!.id + 1}`)
+            .set('Authorization','test');
+
+            expect(response.status).toBe(404);
+            expect(response.body.errors).toBeDefined();
+        });
+
+        it('should be able to remove contact', async () => {
+            const contact = await testService.getContact();
+            
+            const response = await request(app.getHttpServer())
+            .delete(`/api/contacts/${contact!.id}`)
+            .set('Authorization','test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data).toBe(true);
         });
     });
 });
