@@ -19,7 +19,7 @@ describe('UserController (e2e)', () => {
         await app.init();
 
         testService = app.get(TestService);
-        await testService.deleteUser();
+        await testService.deleteContact();
     });
 
     afterAll(async () => {
