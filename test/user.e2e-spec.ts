@@ -44,7 +44,7 @@ describe('UserController (e2e)', () => {
                 password: 'test',
                 name: 'test',
             });
-    
+
             expect(response.status).toBe(201);
             expect(response.body.data.username).toBe('test');
             expect(response.body.data.name).toBe('test');
@@ -52,13 +52,13 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if username already exists', async () => {
             await testService.createUser();
-            
+
             const response = await request(app.getHttpServer()).post('/api/users').send({
                 username: 'test',
                 password: 'test',
                 name: 'test',
             });
-    
+
             expect(response.status).toBe(400);
             expect(response.body.errors).toBeDefined();
         });
@@ -85,11 +85,33 @@ describe('UserController (e2e)', () => {
                 username: 'test',
                 password: 'test',
             });
-    
+
             expect(response.status).toBe(200);
             expect(response.body.data.username).toBe('test');
             expect(response.body.data.name).toBe('test');
             expect(response.body.data.token).toBeDefined();
+        });
+    });
+
+    describe('GET /api/users/current', () => {
+        beforeEach(async () => {
+            await testService.deleteUser();
+            await testService.createUser();
+        });
+
+        it('should be rejected if token is invalid', async () => {
+            const response = await request(app.getHttpServer()).get('/api/users/current').set('Authorization', 'wrong');
+
+            expect(response.status).toBe(401);
+            expect(response.body.errors).toBeDefined();
+        });
+
+        it('should be able to get user', async () => {
+            const response = await request(app.getHttpServer()).get('/api/users/current').set('Authorization', 'test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.username).toBe('test');
+            expect(response.body.data.name).toBe('test');
         });
     });
 });
