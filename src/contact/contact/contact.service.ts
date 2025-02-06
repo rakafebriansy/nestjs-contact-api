@@ -3,7 +3,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { Contact, User } from '@prisma/client';
-import { ContactResponse, CreateContactRequest } from '../../models/contact.model';
+import { ContactResponse, CreateContactRequest, UpdateContactRequest } from '../../models/contact.model';
 import { ValidationService } from '../../common/validation/validation.service';
 import { ContactValidation } from './contact.validation';
 
@@ -25,6 +25,15 @@ export class ContactService {
         }
     }
 
+    async checkContactMustExists(username: string, contactId: number): Promise<Contact | null> {
+        return await this.prismaService.contact.findFirst({
+            where: {
+                username: username,
+                id: contactId
+            },
+        });
+    }
+
     async create(user: User, request: CreateContactRequest): Promise<ContactResponse> {
         this.logger.debug(`ContactService.create(${JSON.stringify(user)}, ${JSON.stringify(request)})`);
         const validateRequest: CreateContactRequest = this.validationService.validate(
@@ -43,16 +52,35 @@ export class ContactService {
     }
 
     async get(user: User, contactId: number): Promise<ContactResponse> {
-        const contact = await this.prismaService.contact.findFirst({
-            where: {
-                username: user.username,
-                id: contactId
-            },
-        });
+        const contact = await this.checkContactMustExists(user.username,contactId);
 
         if(!contact) {
             throw new HttpException('Contact is not found', 404);
         }
+
+        return this.toContactResponse(contact);
+    }
+
+    async update(user: User, request: UpdateContactRequest): Promise<ContactResponse> {
+        this.logger.debug(`ContactService.update(${JSON.stringify(user)}, ${JSON.stringify(request)})`);
+        const validateRequest: UpdateContactRequest = this.validationService.validate(
+            ContactValidation.UPDATE,
+            request
+        );
+
+        let contact = await this.checkContactMustExists(user.username, validateRequest.id);
+
+        if(!contact) {
+            throw new HttpException('Contact is not found', 404);
+        }
+
+        contact = await this.prismaService.contact.update({
+            where: {
+                id: contact.id,
+                username: contact.username
+            },
+            data: validateRequest
+        }); 
 
         return this.toContactResponse(contact);
     }
