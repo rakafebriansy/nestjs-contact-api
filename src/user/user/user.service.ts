@@ -115,4 +115,8 @@ export class UserService {
             name: result.name,
         };
     }
+
+    // async logout(user: User): Promise<UserResponse> {
+
+    // }
 }

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { TestModule } from './test.module';
 import { TestService } from './test.service';
 
@@ -10,7 +10,7 @@ describe('UserController (e2e)', () => {
     let app: INestApplication<App>;
     let testService: TestService;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule, TestModule],
         }).compile();
@@ -19,6 +19,10 @@ describe('UserController (e2e)', () => {
         await app.init();
 
         testService = app.get(TestService);
+    });
+
+    afterAll(async () => {
+        await app.close();
     });
 
     describe('POST /api/users', () => {
