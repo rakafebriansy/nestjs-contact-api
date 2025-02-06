@@ -18,7 +18,7 @@ export class UserService {
     ) { }
 
     async register(request: RegisterUserRequest): Promise<UserResponse> {
-        // this.logger.debug(`UserService.register(${JSON.stringify(request)})`);
+        this.logger.debug(`UserService.register(${JSON.stringify(request)})`);
         const validatedRequest: RegisterUserRequest = this.validationService.validate(
             UserValidation.REGISTER, 
             request
@@ -45,7 +45,7 @@ export class UserService {
     }
 
     async login(request: LoginUserRequest): Promise<UserResponse> {
-        // this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
+        this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
         const validatedRequest: LoginUserRequest = this.validationService.validate(
             UserValidation.LOGIN,
             request
@@ -78,7 +78,7 @@ export class UserService {
         return {
             username: user.username,
             name: user.name,
-            token: user.token!
+            token: user.token ?? undefined
         };
     }
 
@@ -90,7 +90,7 @@ export class UserService {
     }
 
     async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
-        // this.logger.debug(`UserService.update(${JSON.stringify(user)}, ${JSON.stringify(request)})`);
+        this.logger.debug(`UserService.update(${JSON.stringify(user)}, ${JSON.stringify(request)})`);
         const validatedRequest: UpdateUserRequest = this.validationService.validate(
             UserValidation.UPDATE, 
             request
