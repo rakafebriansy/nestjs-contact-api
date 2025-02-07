@@ -25,7 +25,7 @@ export class TestService {
             }
         });
     }
-    
+
     async createContact() {
         await this.prismaService.contact.create({
             data: {
@@ -46,10 +46,20 @@ export class TestService {
         });
     }
 
-    async getContact(): Promise<Contact|null> {
+    async getContact(): Promise<Contact | null> {
         return await this.prismaService.contact.findFirst({
             where: {
                 username: 'test'
+            }
+        });
+    }
+
+    async deleteAddress() {
+        await this.prismaService.address.deleteMany({
+            where: {
+                contact: {
+                    username: 'test'
+                }
             }
         });
     }

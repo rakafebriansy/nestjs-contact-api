@@ -7,7 +7,7 @@ import { TestModule } from './test.module';
 import { TestService } from './test.service';
 
 // npm run test:e2e -- test/contact.e2e-spec.ts
-describe('UserController (e2e)', () => {
+describe('ContactController (e2e)', () => {
     let app: INestApplication<App>;
     let testService: TestService;
 
