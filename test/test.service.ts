@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../src/common/prisma/prisma.service";
 import * as bcrypt from 'bcrypt';
-import { Contact } from "@prisma/client";
+import { Address, Contact } from "@prisma/client";
 
 @Injectable()
 export class TestService {
     constructor(private prismaService: PrismaService) { }
 
-    async deleteUser() {
+    async deleteUser(): Promise<void> {
         await this.prismaService.user.deleteMany({
             where: {
                 username: 'test'
@@ -15,7 +15,7 @@ export class TestService {
         });
     }
 
-    async createUser() {
+    async createUser(): Promise<void> {
         await this.prismaService.user.create({
             data: {
                 username: 'test',
@@ -26,7 +26,7 @@ export class TestService {
         });
     }
 
-    async createContact() {
+    async createContact(): Promise<void> {
         await this.prismaService.contact.create({
             data: {
                 first_name: 'test',
@@ -38,7 +38,7 @@ export class TestService {
         });
     }
 
-    async deleteContact() {
+    async deleteContact(): Promise<void> {
         await this.prismaService.contact.deleteMany({
             where: {
                 username: 'test'
@@ -54,7 +54,31 @@ export class TestService {
         });
     }
 
-    async deleteAddress() {
+    async createAddress(): Promise<void> {
+        const contact: Contact | null = await this.getContact();
+        await this.prismaService.address.create({
+            data: {
+                contact_id: contact!.id,
+                street: 'test street',
+                city: 'test city',
+                province: 'test province',
+                country: 'test country',
+                postal_code: '1111',
+            }
+        });
+    }
+
+    async getAddress(): Promise<Address | null> {
+        return this.prismaService.address.findFirst({
+            where: {
+                contact: {
+                    username: 'test'
+                }
+            }
+        });
+    }
+
+    async deleteAddress(): Promise<void> {
         await this.prismaService.address.deleteMany({
             where: {
                 contact: {
