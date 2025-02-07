@@ -21,7 +21,7 @@ describe('UserController (e2e)', () => {
 
         testService = app.get(TestService);
     });
-    
+
     afterAll(async () => {
         await app.close();
     });
@@ -35,14 +35,14 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if request is invalid', async () => {
             const response = await request(app.getHttpServer())
-            .post('/api/contacts')
-            .set('Authorization','test')
-            .send({
-                first_name: '',
-                last_name: '',
-                email: 'wrong',
-                phone: '',
-            });
+                .post('/api/contacts')
+                .set('Authorization', 'test')
+                .send({
+                    first_name: '',
+                    last_name: '',
+                    email: 'wrong',
+                    phone: '',
+                });
 
             expect(response.status).toBe(400);
             expect(response.body.errors).toBeDefined();
@@ -50,14 +50,14 @@ describe('UserController (e2e)', () => {
 
         it('should be able to create contact', async () => {
             const response = await request(app.getHttpServer())
-            .post('/api/contacts')
-            .set('Authorization','test')
-            .send({
-                first_name: 'test',
-                last_name: 'test',
-                email: 'test@example.com',
-                phone: '9999',
-            });
+                .post('/api/contacts')
+                .set('Authorization', 'test')
+                .send({
+                    first_name: 'test',
+                    last_name: 'test',
+                    email: 'test@example.com',
+                    phone: '9999',
+                });
 
             expect(response.status).toBe(201);
             expect(response.body.data.id).toBeDefined();
@@ -79,8 +79,8 @@ describe('UserController (e2e)', () => {
         it('should be rejected if contact is not found', async () => {
             const contact = await testService.getContact();
             const response = await request(app.getHttpServer())
-            .get(`/api/contacts/${contact!.id + 1}`)
-            .set('Authorization','test');
+                .get(`/api/contacts/${contact!.id + 1}`)
+                .set('Authorization', 'test');
 
             expect(response.status).toBe(404);
             expect(response.body.errors).toBeDefined();
@@ -88,10 +88,10 @@ describe('UserController (e2e)', () => {
 
         it('should be able to find contact', async () => {
             const contact = await testService.getContact();
-            
+
             const response = await request(app.getHttpServer())
-            .get(`/api/contacts/${contact!.id}`)
-            .set('Authorization','test');
+                .get(`/api/contacts/${contact!.id}`)
+                .set('Authorization', 'test');
 
             expect(response.status).toBe(200);
             expect(response.body.data.id).toBeDefined();
@@ -101,7 +101,7 @@ describe('UserController (e2e)', () => {
             expect(response.body.data.phone).toBe('9999');
         });
     });
-    
+
     describe('PUT /api/contacts/:contactId', () => {
         beforeEach(async () => {
             await testService.deleteContact();
@@ -113,14 +113,14 @@ describe('UserController (e2e)', () => {
         it('should be rejected if request is invalid', async () => {
             const contact = await testService.getContact();
             const response = await request(app.getHttpServer())
-            .put(`/api/contacts/${contact!.id}`)
-            .set('Authorization','test')
-            .send({
-                first_name: '',
-                last_name: '',
-                email: 'wrong',
-                phone: '',
-            });
+                .put(`/api/contacts/${contact!.id}`)
+                .set('Authorization', 'test')
+                .send({
+                    first_name: '',
+                    last_name: '',
+                    email: 'wrong',
+                    phone: '',
+                });
 
             expect(response.status).toBe(400);
             expect(response.body.errors).toBeDefined();
@@ -128,16 +128,16 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if contact is not found', async () => {
             const contact = await testService.getContact();
-            
+
             const response = await request(app.getHttpServer())
-            .put(`/api/contacts/${contact!.id + 1}`)
-            .set('Authorization','test')
-            .send({
-                first_name: 'test updated',
-                last_name: 'test updated',
-                email: 'testupdated@example.com',
-                phone: '8888',
-            });
+                .put(`/api/contacts/${contact!.id + 1}`)
+                .set('Authorization', 'test')
+                .send({
+                    first_name: 'test updated',
+                    last_name: 'test updated',
+                    email: 'testupdated@example.com',
+                    phone: '8888',
+                });
 
             expect(response.status).toBe(404);
             expect(response.body.errors).toBeDefined();
@@ -145,16 +145,16 @@ describe('UserController (e2e)', () => {
 
         it('should be able to create contact', async () => {
             const contact = await testService.getContact();
-            
+
             const response = await request(app.getHttpServer())
-            .put(`/api/contacts/${contact!.id}`)
-            .set('Authorization','test')
-            .send({
-                first_name: 'test updated',
-                last_name: 'test updated',
-                email: 'testupdated@example.com',
-                phone: '8888',
-            });
+                .put(`/api/contacts/${contact!.id}`)
+                .set('Authorization', 'test')
+                .send({
+                    first_name: 'test updated',
+                    last_name: 'test updated',
+                    email: 'testupdated@example.com',
+                    phone: '8888',
+                });
 
             expect(response.status).toBe(200);
             expect(response.body.data.id).toBeDefined();
@@ -175,10 +175,10 @@ describe('UserController (e2e)', () => {
 
         it('should be rejected if contact is not found', async () => {
             const contact = await testService.getContact();
-            
+
             const response = await request(app.getHttpServer())
-            .delete(`/api/contacts/${contact!.id + 1}`)
-            .set('Authorization','test');
+                .delete(`/api/contacts/${contact!.id + 1}`)
+                .set('Authorization', 'test');
 
             expect(response.status).toBe(404);
             expect(response.body.errors).toBeDefined();
@@ -186,13 +186,119 @@ describe('UserController (e2e)', () => {
 
         it('should be able to remove contact', async () => {
             const contact = await testService.getContact();
-            
+
             const response = await request(app.getHttpServer())
-            .delete(`/api/contacts/${contact!.id}`)
-            .set('Authorization','test');
+                .delete(`/api/contacts/${contact!.id}`)
+                .set('Authorization', 'test');
 
             expect(response.status).toBe(200);
             expect(response.body.data).toBe(true);
+        });
+    });
+
+    describe('GET /api/contacts', () => {
+        beforeEach(async () => {
+            await testService.deleteContact();
+            await testService.deleteUser();
+            await testService.createUser();
+            await testService.createContact();
+        });
+
+        it('should be able to search contacts', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .set('Authorization', 'test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(1);
+        });
+
+        it('should be able to search contacts by name', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .set('Authorization', 'test')
+                .query({
+                    name: 'st',
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(1);
+        });
+
+        it('should be return nothing if search contacts by name and contact with this name is not found', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .set('Authorization', 'test')
+                .query({
+                    name: 'wrong',
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(0);
+        });
+
+        it('should be able to search contacts by email', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .set('Authorization', 'test')
+                .query({
+                    email: 'exa',
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(1);
+        });
+
+        it('should be return nothing if search contacts by email and contact with this email is not found', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .set('Authorization', 'test')
+                .query({
+                    email: 'wrong',
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(0);
+        });
+
+        it('should be able to search contacts by phone', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .query({
+                    phone: '99',
+                })
+                .set('Authorization', 'test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(1);
+        });
+
+        it('should return nothing if search contacts by phone and contact with this phone is not found', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .query({
+                    phone: 'wrong',
+                })
+                .set('Authorization', 'test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(0);
+        });
+
+        it('should be able to search contacts with page', async () => {
+            const response = await request(app.getHttpServer())
+                .get('/api/contacts')
+                .query({
+                    per_page: 1,
+                    page: 2,
+                })
+                .set('Authorization', 'test');
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(0);
+            expect(response.body.paging.current_page).toBe(2);
+            expect(response.body.paging.total_page).toBe(1);
+            expect(response.body.paging.per_page).toBe(1);
         });
     });
 });

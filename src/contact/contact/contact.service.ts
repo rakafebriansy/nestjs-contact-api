@@ -3,9 +3,10 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { Contact, User } from '@prisma/client';
-import { ContactResponse, CreateContactRequest, UpdateContactRequest } from '../../models/contact.model';
+import { ContactResponse, CreateContactRequest, SearchContactRequest, UpdateContactRequest } from '../../models/contact.model';
 import { ValidationService } from '../../common/validation/validation.service';
 import { ContactValidation } from './contact.validation';
+import { WebResponse } from '../../models/web.model';
 
 @Injectable()
 export class ContactService {
@@ -94,5 +95,74 @@ export class ContactService {
         });
 
         return this.toContactResponse(contact);
+    }
+
+    async search(user: User, request: SearchContactRequest): Promise<WebResponse<ContactResponse[]>> {
+        const validateRequest: SearchContactRequest = this.validationService.validate(
+            ContactValidation.SEARCH,
+            request
+        );
+
+        const filters: Array<object> = [];
+
+        if(validateRequest.name) {
+            filters.push({
+                OR: [
+                    {
+                        first_name: {
+                            contains: validateRequest.name,
+                        }
+                    },
+                    {
+                        last_name: {
+                            contains: validateRequest.name,
+                        }
+                    },
+                ]
+            });
+        }
+
+        if(validateRequest.email) {
+            filters.push({
+                email: {
+                    contains: validateRequest.email
+                }
+            });
+        }
+
+        if(validateRequest.phone) {
+            filters.push({
+                phone: {
+                    contains: validateRequest.phone
+                }
+            });
+        }
+
+        const skip = (validateRequest.page - 1) * validateRequest.per_page;
+        
+        const contacts = await this.prismaService.contact.findMany({
+            where: {
+                username: user.username,
+                AND: filters
+            },
+            take: validateRequest.per_page,
+            skip: skip
+        });
+
+        const total = await this.prismaService.contact.count({
+            where: {
+                username: user.username,
+                AND: filters
+            },
+        });
+
+        return {
+            data: contacts.map(contact => this.toContactResponse(contact)),
+            paging: {
+                current_page: validateRequest.page,
+                per_page: validateRequest.per_page,
+                total_page: Math.ceil(total/validateRequest.per_page)
+            }
+        };
     }
 }
