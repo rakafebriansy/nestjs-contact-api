@@ -66,7 +66,7 @@ export class ContactController {
         };
     }
 
-    @Get('')
+    @Get()
     @HttpCode(200)
     async search(
         @Auth() user: User,
