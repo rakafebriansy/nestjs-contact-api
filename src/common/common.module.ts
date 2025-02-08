@@ -11,42 +11,46 @@ import { AuthMiddleware } from './auth/auth.middleware';
 
 @Global()
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    WinstonModule.forRoot({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        nestWinstonModuleUtilities.format.nestLike(),
+      ),
+      transports: [
+        new winston.transports.File({
+          filename: 'logs/error.log',
+          level: 'error',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.json(),
+          ),
         }),
-        WinstonModule.forRoot({
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                nestWinstonModuleUtilities.format.nestLike()
-            ),
-            transports: [
-                new winston.transports.File({
-                    filename: 'logs/error.log',
-                    level: 'error',
-                    format: winston.format.combine(
-                        winston.format.timestamp(),
-                        winston.format.json()
-                    )
-                }),
-                new winston.transports.File({
-                    filename: 'logs/combined.log',
-                    format: winston.format.combine(
-                        winston.format.timestamp(),
-                        winston.format.json()
-                    )
-                }),
-            ]
-        })],
-    providers: [PrismaService, ValidationService, {
-        provide: APP_FILTER,
-        useClass: ErrorFilter
-    }],
-    exports: [PrismaService, ValidationService],
+        new winston.transports.File({
+          filename: 'logs/combined.log',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.json(),
+          ),
+        }),
+      ],
+    }),
+  ],
+  providers: [
+    PrismaService,
+    ValidationService,
+    {
+      provide: APP_FILTER,
+      useClass: ErrorFilter,
+    },
+  ],
+  exports: [PrismaService, ValidationService],
 })
-
 export class CommonModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('/api/*');
-    }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('/api/*');
+  }
 }
